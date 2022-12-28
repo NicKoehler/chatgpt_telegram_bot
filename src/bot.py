@@ -2,8 +2,8 @@ import warnings
 from os import getenv
 from dotenv import load_dotenv
 from revChatGPT.ChatGPT import Chatbot
-from src.utils import get_chatgpt_response
-from src.internationalization import get_translation
+from utils import get_chatgpt_response
+from internationalization import get_translation
 from aiogram import Bot, Dispatcher, executor, types
 
 load_dotenv()
