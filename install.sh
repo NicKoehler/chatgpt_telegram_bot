@@ -4,7 +4,7 @@ command_exist() {
     if ! command -v $1 &> /dev/null
     then
         echo "Install '$1' and run again."
-        exit
+        exit 1
     fi
 }
 
@@ -19,17 +19,20 @@ python3 -m venv venv
 
 clear
 
-echo -e "Dependencies installed.\n"
+echo "Dependencies installed."
+printf "\n"
 
-read -p "Enter your Telegram ID > " owner_id
-read -p "Enter your Telegram Bot Token > " telegram_token
-read -p "Enter your OpenAI Session Token > " openai_token
+read < /dev/tty -p "Enter your Telegram ID > " owner_id
+read < /dev/tty -p "Enter your Telegram Bot Token > " telegram_token
+read < /dev/tty -p "Enter your OpenAI Session Token > " openai_token
 
 echo "OWNER_ID=$owner_id" >> .env
 echo "TELEGRAM_BOT_TOKEN=$telegram_token" >> .env
 echo "OPENAI_SESSION_TOKEN=$openai_token" >> .env
 
-echo "./venv/bin/python3 src/bot.py" > start.sh
+echo "#!/bin/bash" >> start.sh
+echo "./venv/bin/python3 src/bot.py" >> start.sh
+
 chmod +x start.sh
 
 echo "Installation complete."
