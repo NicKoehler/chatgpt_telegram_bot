@@ -34,8 +34,9 @@ async def spinner_maker(user_message: types.Message, l: list[bool]):
 
     spinner = Spinner()
     message = await user_message.answer(spinner.get_next())
-    t1 = time()
-    while not l[0]:
+    start_time = time()
+    t1 = start_time
+    while l and t1 - start_time < 120:
         t2 = time()
         if t2 - t1 > 2:
             try:
@@ -49,14 +50,18 @@ async def spinner_maker(user_message: types.Message, l: list[bool]):
 
 async def send_gpt_message(chatbot: Chatbot, message: types.Message, l: list[bool]):
     loop = asyncio.get_event_loop()
-    resp = await loop.run_in_executor(None, chatbot.ask, message.text)
-    l[0] = True
-    return resp
+    try:
+        resp = await loop.run_in_executor(None, chatbot.ask, message.text)
+    except Exception as e:
+        resp = {"message": e}
+    finally:
+        l.pop()
+        return resp
 
 
 async def get_chatgpt_response(chatbot: Chatbot, message: types.Message):
     # please god forgive me
-    l = [False]
+    l = set([0])
     response = (
         await asyncio.gather(
             spinner_maker(message, l), send_gpt_message(chatbot, message, l)
