@@ -9,11 +9,15 @@ Welcome to the ChatGPT Telegram Bot! This bot allows you to have a conversation 
 To install the ChatGPT Telegram Bot, follow these steps:
 
 1. Run the following command:
+    - for linux:
 
-```sh
-curl https://raw.githubusercontent.com/NicKoehler/chatgpt_telegram_bot/main/install.sh | sh
-```
-
+    ```sh
+    curl https://raw.githubusercontent.com/NicKoehler/chatgpt_telegram_bot/main/install.sh | sh
+    ```
+    - for windows:
+    ```powershell
+    irm https://raw.githubusercontent.com/NicKoehler/chatgpt_telegram_bot/main/install.ps1 | iex
+    ```
 2. Follow the prompts to complete the installation process.
 
 ### Starting the Bot
@@ -27,11 +31,14 @@ cd chatgpt_telegram_bot
 ```
 
 2. Run the start.sh script:
-
-```sh
-./start.sh
-```
-
+    - for linux:
+    ```sh
+    ./start.sh
+    ```
+    - for windows:
+    ```powershell
+    .\start.ps1
+    ```
 ## Using the Bot
 
 To use the ChatGPT Telegram Bot, simply send it a message in Telegram. The bot will use ChatGPT to generate a response based on your message. You can continue the conversation by sending more messages, and the bot will use ChatGPT to generate responses based on the previous conversation.
