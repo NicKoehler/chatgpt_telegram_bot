@@ -1,3 +1,5 @@
+#!venv/bin/python
+
 import warnings
 from os import getenv
 from dotenv import load_dotenv

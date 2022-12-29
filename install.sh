@@ -30,12 +30,7 @@ echo "OWNER_ID=$owner_id" >> .env
 echo "TELEGRAM_BOT_TOKEN=$telegram_token" >> .env
 echo "OPENAI_SESSION_TOKEN=$openai_token" >> .env
 
-echo "#!/bin/bash" >> start.sh
-echo "./venv/bin/python3 src/bot.py" >> start.sh
-
-chmod +x start.sh
-
 echo "Installation complete."
-echo "Run 'start.sh' to start the bot."
+echo "Enter the chatgpt_telegram_bot folder and run 'start.sh' to start the bot."
 
 exit 0
