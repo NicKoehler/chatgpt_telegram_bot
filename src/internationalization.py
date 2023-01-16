@@ -9,6 +9,7 @@ _strings = {
         "rollback_ok": "Conversation carried back one message",
         "rollback_fail": "You are already at the beginning of the conversation",
         "reset": "Conversation has been reset",
+        "empty": "Empty message",
     },
     "it": {
         "start": (
@@ -20,6 +21,7 @@ _strings = {
         "rollback_ok": "Conversazione riportata indietro di un messaggio",
         "rollback_fail": "Sei già all'inizio della conversazione",
         "reset": "Conversazione resettata",
+        "empty": "Messaggio vuoto",
     },
 }
 

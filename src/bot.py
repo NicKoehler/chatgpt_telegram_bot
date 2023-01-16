@@ -51,11 +51,13 @@ async def text_handler(message: types.Message):
     await message.answer_chat_action("typing")
 
     response = await get_chatgpt_response(chatbot, message)
-
-    try:
-        await message.answer(response["message"])
-    except:
-        await message.answer(response["message"], parse_mode=None)
+    if response["message"]:
+        try:
+            await message.answer(response["message"])
+        except:
+            await message.answer(response["message"], parse_mode="HTML")
+    else:
+        await message.answer(get_translation("empty", message.from_user.language_code))
 
 
 if __name__ == "__main__":
