@@ -45,6 +45,8 @@ To use the ChatGPT Telegram Bot, simply send it a message in Telegram. The bot w
 
 You can rollback the conversation by sending the `/rollback` command, and you can reset the conversation by sending the `/reset` command.
 
+You can update the bot by sending the `/update` command, and you can stop the bot by sending the `/stop` command.
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.

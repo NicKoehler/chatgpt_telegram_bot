@@ -1,6 +1,5 @@
 #!venv/bin/python
 
-
 import asyncio
 import warnings
 from dotenv import load_dotenv
@@ -70,7 +69,7 @@ async def update_handler(message: types.Message):
     await message.answer(
         get_translation("update_done", message.from_user.language_code)
     )
-    system(r".\start.ps1" if name == "nt" else r".\start.sh")
+    system(r".\start.ps1" if name == "nt" else "./start.sh")
     loop.stop()
 
 
