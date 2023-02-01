@@ -34,7 +34,7 @@ async def start_handler(message: types.Message):
 @dp.message_handler(OWNER_CHAT_FILTER, commands="rollback")
 async def rollback_handler(message: types.Message):
     try:
-        chatbot.rollback_conversation()
+        chatbot.rollback(1)
         await message.answer(
             get_translation("rollback_ok", message.from_user.language_code)
         )
@@ -46,7 +46,7 @@ async def rollback_handler(message: types.Message):
 
 @dp.message_handler(OWNER_CHAT_FILTER, commands="reset")
 async def reset_handler(message: types.Message):
-    chatbot.reset_chat()
+    chatbot.reset()
     await message.answer(get_translation("reset", message.from_user.language_code))
 
 
