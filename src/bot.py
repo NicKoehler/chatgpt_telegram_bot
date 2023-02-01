@@ -4,9 +4,9 @@ import asyncio
 import warnings
 from dotenv import load_dotenv
 from subprocess import run, PIPE
+from utils import send_gpt_message
 from os import getenv, name, system
-from revChatGPT.ChatGPT import Chatbot
-from utils import get_chatgpt_response
+from revChatGPT.Official import Chatbot
 from aiogram.utils.exceptions import BotBlocked
 from internationalization import get_translation
 from aiogram import Bot, Dispatcher, executor, types
@@ -17,10 +17,10 @@ warnings.filterwarnings("ignore")
 
 OWNER_ID = int(getenv("OWNER_ID"))
 TELEGRAM_BOT_TOKEN = getenv("TELEGRAM_BOT_TOKEN")
-OPENAI_SESSION_TOKEN = getenv("OPENAI_SESSION_TOKEN")
+OPENAI_API_KEY = getenv("OPENAI_API_KEY")
 OWNER_CHAT_FILTER = lambda message: message.chat.id == OWNER_ID
 
-chatbot = Chatbot(config={"session_token": OPENAI_SESSION_TOKEN})
+chatbot = Chatbot(api_key=OPENAI_API_KEY)
 loop = asyncio.get_event_loop()
 bot = Bot(token=TELEGRAM_BOT_TOKEN, parse_mode=types.ParseMode.MARKDOWN)
 dp = Dispatcher(bot)
@@ -76,15 +76,7 @@ async def update_handler(message: types.Message):
 @dp.message_handler(OWNER_CHAT_FILTER)
 async def text_handler(message: types.Message):
     await message.answer_chat_action("typing")
-
-    response = await get_chatgpt_response(chatbot, message)
-    if response["message"]:
-        try:
-            await message.answer(response["message"])
-        except:
-            await message.answer(response["message"], parse_mode="HTML")
-    else:
-        await message.answer(get_translation("empty", message.from_user.language_code))
+    await send_gpt_message(chatbot, message)
 
 
 async def ready(_):

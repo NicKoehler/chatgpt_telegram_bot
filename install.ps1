@@ -13,6 +13,7 @@ powershell -Command {
     git clone https://github.com/nickoehler/chatgpt_telegram_bot.git
 
     cd chatgpt_telegram_bot
+    git checkout official-api
     python -m venv venv
     .\venv\Scripts\pip install -r requirements.txt
 
@@ -23,12 +24,12 @@ powershell -Command {
 
     $owner_id = Read-Host "Enter your Telegram ID > "
     $telegram_token = Read-Host "Enter your Telegram Bot Token > "
-    $openai_token = Read-Host "Enter your OpenAI Session Token > "
+    $openai_key = Read-Host "Enter your OpenAI Api Key > "
 
     New-Item -ItemType File -Path ".env" -Force | Out-Null
     Add-Content -Path ".env" -Value "OWNER_ID=$owner_id"
     Add-Content -Path ".env" -Value "TELEGRAM_BOT_TOKEN=$telegram_token"
-    Add-Content -Path ".env" -Value "OPENAI_SESSION_TOKEN=$openai_token"
+    Add-Content -Path ".env" -Value "OPENAI_API_KEY=$openai_key"
 
     Write-Output "Installation complete."
     Write-Output "Enter the chatgpt_telegram_bot folder and run 'start.ps1' to start the bot."

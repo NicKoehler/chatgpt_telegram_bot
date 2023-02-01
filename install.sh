@@ -14,6 +14,7 @@ command_exist python3
 git clone https://github.com/nickoehler/chatgpt_telegram_bot.git
 
 cd chatgpt_telegram_bot
+git checkout official-api
 python3 -m venv venv
 ./venv/bin/pip3 install -r requirements.txt
 
@@ -24,11 +25,11 @@ printf "\n"
 
 read < /dev/tty -p "Enter your Telegram ID > " owner_id
 read < /dev/tty -p "Enter your Telegram Bot Token > " telegram_token
-read < /dev/tty -p "Enter your OpenAI Session Token > " openai_token
+read < /dev/tty -p "Enter your OpenAI Api Key > " openai_key
 
 echo "OWNER_ID=$owner_id" >> .env
 echo "TELEGRAM_BOT_TOKEN=$telegram_token" >> .env
-echo "OPENAI_SESSION_TOKEN=$openai_token" >> .env
+echo "OPENAI_API_KEY=$openai_key" >> .env
 
 echo "Installation complete."
 echo "Enter the chatgpt_telegram_bot folder and run 'start.sh' to start the bot."

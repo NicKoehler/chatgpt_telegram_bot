@@ -1,74 +1,46 @@
 import asyncio
 from time import time
-from random import choice
 from aiogram import types, exceptions
-from revChatGPT.ChatGPT import Chatbot
+from revChatGPT.Official import Chatbot
 
 
-class Spinner:
-
-    _all = [
-        ["◐", "◓", "◑", "◒"],
-        [".", "..", "...", ".."],
-        ["←", "↖", "↑", "↗", "→", "↘", "↓", "↙"],
-        ["⠁", "⠂", "⠄", "⡀", "⢀", "⠠", "⠐", "⠈"],
-        ["⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷"],
-        ["🌕", "🌖", "🌗", "🌘", "🌑", "🌒", "🌓", "🌔"],
-        ["▉", "▊", "▋", "▌", "▍", "▎", "▏", "▎", "▍", "▌", "▋", "▊"],
-        ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█", "▇", "▆", "▅", "▄", "▃"],
-        ["🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚", "🕛"],
-    ]
-
-    def __init__(self) -> None:
-        self.list = choice(self._all)
-        self.length = len(self.list)
-        self._curr = 0
-
-    def get_next(self):
-        s = self.list[self._curr]
-        self._curr = (self._curr + 1) % self.length
-        return s
+async def send_message(s: str, message: types.Message) -> types.Message:
+    while True:
+        try:
+            return await message.answer(s)
+        except exceptions.CantParseEntities:
+            return await message.answer(s, parse_mode=types.ParseMode.HTML)
+        except exceptions.BadRequest:
+            return
+        except exceptions.RetryAfter as e:
+            await asyncio.sleep(e.timeout)
 
 
-async def spinner_maker(user_message: types.Message, condition: asyncio.Condition):
-
-    spinner = Spinner()
-    message = await user_message.answer(spinner.get_next())
-    start_time = time()
-    t1 = start_time
-    while condition.locked() and t1 - start_time < 60 * 5:
-        t2 = time()
-        if t2 - t1 > 2:
-            try:
-                message = await message.edit_text(spinner.get_next())
-                t1 = t2
-            except exceptions.RetryAfter as e:
-                await asyncio.sleep(e.timeout)
-        await asyncio.sleep(0.1)
-    await message.delete()
+async def edit_message(s: str, message: types.Message) -> types.Message:
+    while True:
+        try:
+            await message.edit_text(s)
+            break
+        except exceptions.CantParseEntities:
+            await message.edit_text(s, parse_mode=types.ParseMode.HTML)
+            break
+        except exceptions.MessageNotModified:
+            break
+        except exceptions.RetryAfter as e:
+            await asyncio.sleep(e.timeout)
 
 
-async def send_gpt_message(
-    chatbot: Chatbot, message: types.Message, condition: asyncio.Condition
-):
-    loop = asyncio.get_event_loop()
-    try:
-        resp = await loop.run_in_executor(None, chatbot.ask, message.text)
-    except Exception as e:
-        resp = {"message": e}
-    finally:
-        condition.release()
-        return resp
+async def send_gpt_message(chatbot: Chatbot, message: types.Message):
+    t1 = time()
+    full_message = ""
+    starting_message = None
+    for response in chatbot.ask_stream(message.text):
+        full_message += response
+        if starting_message is None:
+            starting_message = await send_message(full_message, message)
+        elif time() - t1 >= 2:
+            t1 = time()
+            await edit_message(full_message, starting_message)
 
-
-async def get_chatgpt_response(chatbot: Chatbot, message: types.Message):
-    condition = asyncio.Condition()
-    await condition.acquire()
-    response = (
-        await asyncio.gather(
-            spinner_maker(message, condition),
-            send_gpt_message(chatbot, message, condition),
-        )
-    )[1]
-
-    return response or {"message": None}
+    if starting_message is not None and starting_message.text != full_message:
+        await edit_message(full_message, starting_message)
