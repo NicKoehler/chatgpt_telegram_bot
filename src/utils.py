@@ -13,7 +13,7 @@ start_command = r".\start.ps1" if name == "nt" else "./start.sh"
 pip_command = r".\venv\Scripts\pip" if name == "nt" else "./venv/bin/pip"
 
 
-async def send_message(s: str, message: types.Message) -> types.Message:
+async def send_message(s: str, message: types.Message) -> types.Message | None:
     while True:
         try:
             return await message.answer(s)
@@ -25,7 +25,7 @@ async def send_message(s: str, message: types.Message) -> types.Message:
             await asyncio.sleep(e.timeout)
 
 
-async def edit_message(s: str, message: types.Message) -> types.Message:
+async def edit_message(s: str, message: types.Message) -> None:
     while True:
         try:
             await message.edit_text(s)
@@ -39,7 +39,10 @@ async def edit_message(s: str, message: types.Message) -> types.Message:
             await asyncio.sleep(e.timeout)
 
 
-async def send_gpt_message(chatbot: Chatbot, message: types.Message):
+async def send_gpt_message(chatbot: Chatbot, message: types.Message) -> None:
+    """
+    send messages in parts updating the answer
+    """
     t1 = time()
     full_message = ""
     starting_message = None
@@ -55,7 +58,11 @@ async def send_gpt_message(chatbot: Chatbot, message: types.Message):
         await edit_message(full_message, starting_message)
 
 
-async def update_and_restart(message: types.Message):
+async def update_and_restart(message: types.Message) -> None:
+    """
+    Pulls updates from github, updates the packages and restart the bot
+    informing the user
+    """
     await message.answer(
         get_translation("update_load", message.from_user.language_code)
     )
@@ -81,5 +88,8 @@ async def update_and_restart(message: types.Message):
     stop_bot()
 
 
-def stop_bot():
+def stop_bot() -> None:
+    """
+    Stop the bot
+    """
     asyncio.get_event_loop().stop()
