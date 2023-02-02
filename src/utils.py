@@ -1,6 +1,7 @@
 import logging
 import asyncio
 from time import time
+from html import escape
 from os import name, system
 from subprocess import run, PIPE
 from aiogram import types, exceptions
@@ -17,7 +18,7 @@ async def send_message(s: str, message: types.Message) -> types.Message:
         try:
             return await message.answer(s)
         except exceptions.CantParseEntities:
-            return await message.answer(s, parse_mode=types.ParseMode.HTML)
+            return await message.answer(escape(s), parse_mode=types.ParseMode.HTML)
         except exceptions.BadRequest:
             return
         except exceptions.RetryAfter as e:
@@ -30,7 +31,7 @@ async def edit_message(s: str, message: types.Message) -> types.Message:
             await message.edit_text(s)
             break
         except exceptions.CantParseEntities:
-            await message.edit_text(s, parse_mode=types.ParseMode.HTML)
+            await message.edit_text(escape(s), parse_mode=types.ParseMode.HTML)
             break
         except exceptions.MessageNotModified:
             break
