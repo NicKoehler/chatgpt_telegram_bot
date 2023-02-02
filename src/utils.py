@@ -1,7 +1,7 @@
 import logging
 import asyncio
-from os import name, system
 from time import time
+from os import name, system
 from subprocess import run, PIPE
 from aiogram import types, exceptions
 from revChatGPT.Official import Chatbot
