@@ -1,8 +1,17 @@
+import logging
 import asyncio
 from time import time
 from random import choice
+from os import name, system
+from subprocess import run, PIPE
 from aiogram import types, exceptions
 from revChatGPT.ChatGPT import Chatbot
+from internationalization import get_translation
+
+
+logger = logging.getLogger("chatgpt_telegram_bot")
+start_command = r".\start.ps1" if name == "nt" else "./start.sh"
+pip_command = r".\venv\Scripts\pip" if name == "nt" else "./venv/bin/pip"
 
 
 class Spinner:
@@ -72,3 +81,33 @@ async def get_chatgpt_response(chatbot: Chatbot, message: types.Message):
     )[1]
 
     return response or {"message": None}
+
+
+async def update_and_restart(message: types.Message):
+    await message.answer(
+        get_translation("update_load", message.from_user.language_code)
+    )
+    p = run(["git", "pull"], stdout=PIPE, stderr=PIPE, text=True)
+    if p.stdout:
+        await message.answer(p.stdout)
+    if p.stderr:
+        await message.answer(p.stderr)
+    p = run(
+        [pip_command, "install", "-r", "requirements.txt", "--upgrade"],
+        stdout=PIPE,
+        stderr=PIPE,
+        text=True,
+    )
+    if p.stdout:
+        logger.info(p.stdout)
+    if p.stderr:
+        logger.error(p.stderr)
+    await message.answer(
+        get_translation("update_done", message.from_user.language_code)
+    )
+    system(start_command)
+    stop_bot()
+
+
+def stop_bot():
+    asyncio.get_event_loop().stop()
