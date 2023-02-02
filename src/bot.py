@@ -1,27 +1,24 @@
 #!venv/bin/python
 
-import asyncio
 import warnings
+from os import getenv
 from dotenv import load_dotenv
-from subprocess import run, PIPE
-from utils import send_gpt_message
-from os import getenv, name, system
 from revChatGPT.Official import Chatbot
 from aiogram.utils.exceptions import BotBlocked
 from internationalization import get_translation
 from aiogram import Bot, Dispatcher, executor, types
+from utils import send_gpt_message, update_and_restart, stop_bot
 
 load_dotenv()
 
 warnings.filterwarnings("ignore")
 
 OWNER_ID = int(getenv("OWNER_ID"))
-TELEGRAM_BOT_TOKEN = getenv("TELEGRAM_BOT_TOKEN")
 OPENAI_API_KEY = getenv("OPENAI_API_KEY")
+TELEGRAM_BOT_TOKEN = getenv("TELEGRAM_BOT_TOKEN")
 OWNER_CHAT_FILTER = lambda message: message.chat.id == OWNER_ID
 
 chatbot = Chatbot(api_key=OPENAI_API_KEY)
-loop = asyncio.get_event_loop()
 bot = Bot(token=TELEGRAM_BOT_TOKEN, parse_mode=types.ParseMode.MARKDOWN)
 dp = Dispatcher(bot)
 
@@ -53,24 +50,12 @@ async def reset_handler(message: types.Message):
 @dp.message_handler(OWNER_CHAT_FILTER, commands="stop")
 async def stop_handler(message: types.Message):
     await message.answer(get_translation("stop", message.from_user.language_code))
-    loop.stop()
+    stop_bot()
 
 
 @dp.message_handler(OWNER_CHAT_FILTER, commands="update")
 async def update_handler(message: types.Message):
-    await message.answer(
-        get_translation("update_load", message.from_user.language_code)
-    )
-    p = run(["git", "pull"], stdout=PIPE, stderr=PIPE, text=True)
-    if p.stdout:
-        await message.answer(p.stdout)
-    if p.stderr:
-        await message.answer(p.stderr)
-    await message.answer(
-        get_translation("update_done", message.from_user.language_code)
-    )
-    system(r".\start.ps1" if name == "nt" else "./start.sh")
-    loop.stop()
+    await update_and_restart(message)
 
 
 @dp.message_handler(OWNER_CHAT_FILTER)

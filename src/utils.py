@@ -1,7 +1,15 @@
+import logging
 import asyncio
+from os import name, system
 from time import time
+from subprocess import run, PIPE
 from aiogram import types, exceptions
 from revChatGPT.Official import Chatbot
+from internationalization import get_translation
+
+logger = logging.getLogger("chatgpt_telegram_bot")
+start_command = r".\start.ps1" if name == "nt" else "./start.sh"
+pip_command = r".\venv\Scripts\pip" if name == "nt" else "./venv/bin/pip"
 
 
 async def send_message(s: str, message: types.Message) -> types.Message:
@@ -44,3 +52,33 @@ async def send_gpt_message(chatbot: Chatbot, message: types.Message):
 
     if starting_message is not None and starting_message.text != full_message:
         await edit_message(full_message, starting_message)
+
+
+async def update_and_restart(message: types.Message):
+    await message.answer(
+        get_translation("update_load", message.from_user.language_code)
+    )
+    p = run(["git", "pull"], stdout=PIPE, stderr=PIPE, text=True)
+    if p.stdout:
+        await message.answer(p.stdout)
+    if p.stderr:
+        await message.answer(p.stderr)
+    p = run(
+        [pip_command, "install", "-r", "requirements.txt", "--upgrade"],
+        stdout=PIPE,
+        stderr=PIPE,
+        text=True,
+    )
+    if p.stdout:
+        logger.info(p.stdout)
+    if p.stderr:
+        logger.error(p.stderr)
+    await message.answer(
+        get_translation("update_done", message.from_user.language_code)
+    )
+    system(start_command)
+    stop_bot()
+
+
+def stop_bot():
+    asyncio.get_event_loop().stop()
