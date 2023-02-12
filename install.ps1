@@ -24,12 +24,15 @@ powershell -Command {
 
     $owner_id = Read-Host "Enter your Telegram ID > "
     $telegram_token = Read-Host "Enter your Telegram Bot Token > "
-    $openai_key = Read-Host "Enter your OpenAI Api Key > "
+    $openai_email = Read-Host "Enter your OpenAI Email > "
+    $openai_pass = Read-Host "Enter your OpenAI Password > "
 
     New-Item -ItemType File -Path ".env" -Force | Out-Null
     Add-Content -Path ".env" -Value "OWNER_ID=$owner_id"
+    Add-Content -Path ".env" -Value "ALLOWED_IDS=$owner_id"
     Add-Content -Path ".env" -Value "TELEGRAM_BOT_TOKEN=$telegram_token"
-    Add-Content -Path ".env" -Value "OPENAI_API_KEY=$openai_key"
+    Add-Content -Path ".env" -Value "EMAIL=$openai_email"
+    Add-Content -Path ".env" -Value "PASS=$openai_pass"
 
     Write-Output "Installation complete."
     Write-Output "Enter the chatgpt_telegram_bot folder and run 'start.ps1' to start the bot."

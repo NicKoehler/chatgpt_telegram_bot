@@ -4,9 +4,8 @@ from time import time
 from html import escape
 from os import name, system
 from subprocess import run, PIPE
+from revChatGPT.V2 import Chatbot
 from aiogram import types, exceptions
-from revChatGPT.Official import Chatbot
-from openai.error import ServiceUnavailableError 
 from internationalization import get_translation
 
 logger = logging.getLogger("chatgpt_telegram_bot")
@@ -44,25 +43,21 @@ async def send_gpt_message(chatbot: Chatbot, message: types.Message) -> None:
     """
     send messages in parts updating the answer
     """
-    error = False
-    while not error:
-        try:
-            error = True
-            t1 = time()
-            full_message = ""
-            starting_message = None
-            for response in chatbot.ask_stream(message.text):
-                full_message += response
-                if starting_message is None:
-                    starting_message = await send_message(full_message, message)
-                elif time() - t1 >= 2:
-                    t1 = time()
-                    await edit_message(full_message, starting_message)
 
-            if starting_message is not None and starting_message.text != full_message:
-                await edit_message(full_message, starting_message)
-        except ServiceUnavailableError:
-            error = False
+    t1 = time()
+    full_message = ""
+    starting_message = None
+    async for line in chatbot.ask(message.text):
+        full_message += line["choices"][0]["text"].replace("<|im_end|>", "")
+        if starting_message is None:
+            starting_message = await send_message(full_message, message)
+        elif time() - t1 >= 2:
+            t1 = time()
+            await edit_message(full_message, starting_message)
+
+    if starting_message is not None and starting_message.text != full_message:
+        await edit_message(full_message, starting_message)
+
 
 async def update_and_restart(message: types.Message) -> None:
     """

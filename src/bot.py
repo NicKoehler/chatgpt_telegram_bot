@@ -3,7 +3,7 @@
 import warnings
 from os import getenv
 from dotenv import load_dotenv
-from revChatGPT.Official import Chatbot
+from revChatGPT.V2 import Chatbot
 from aiogram.utils.exceptions import BotBlocked
 from internationalization import get_translation
 from aiogram import Bot, Dispatcher, executor, types
@@ -13,15 +13,16 @@ load_dotenv()
 
 warnings.filterwarnings("ignore")
 
+PASS = getenv("PASS")
+EMAIL = getenv("EMAIL")
 OWNER_ID = int(getenv("OWNER_ID"))
-OPENAI_API_KEY = getenv("OPENAI_API_KEY")
 TELEGRAM_BOT_TOKEN = getenv("TELEGRAM_BOT_TOKEN")
 ALLOWED_IDS = set(map(int, getenv("ALLOWED_IDS").split(",")))
 OWNER_CHAT_FILTER = lambda message: message.chat.id == OWNER_ID
 ALLOWED_CHAT_FILTER = lambda message: message.chat.id in ALLOWED_IDS
 
 
-chatbots = {id: Chatbot(api_key=OPENAI_API_KEY) for id in ALLOWED_IDS}
+chatbots = {id: Chatbot(email=EMAIL, password=PASS) for id in ALLOWED_IDS}
 bot = Bot(token=TELEGRAM_BOT_TOKEN, parse_mode=types.ParseMode.MARKDOWN)
 dp = Dispatcher(bot)
 
