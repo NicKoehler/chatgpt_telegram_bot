@@ -45,7 +45,6 @@ async def rollback_handler(message: types.Message):
 
 @dp.message_handler(OWNER_CHAT_FILTER, commands="reset")
 async def reset_handler(message: types.Message):
-    chatbot.reset()
     await message.answer(get_translation("reset", message.from_user.language_code))
 
 
