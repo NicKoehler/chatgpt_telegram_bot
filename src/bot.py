@@ -17,10 +17,9 @@ PASS = getenv("PASS")
 EMAIL = getenv("EMAIL")
 OWNER_ID = int(getenv("OWNER_ID"))
 TELEGRAM_BOT_TOKEN = getenv("TELEGRAM_BOT_TOKEN")
-ALLOWED_IDS = set([OWNER_ID]) + set(map(int, getenv("ALLOWED_IDS").split(",")))
+ALLOWED_IDS = set([OWNER_ID]).union(set(map(int, getenv("ALLOWED_IDS").split(","))))
 OWNER_CHAT_FILTER = lambda message: message.chat.id == OWNER_ID
 ALLOWED_CHAT_FILTER = lambda message: message.chat.id in ALLOWED_IDS
-
 
 chatbots = {id: Chatbot(email=EMAIL, password=PASS) for id in ALLOWED_IDS}
 bot = Bot(token=TELEGRAM_BOT_TOKEN, parse_mode=types.ParseMode.MARKDOWN)
