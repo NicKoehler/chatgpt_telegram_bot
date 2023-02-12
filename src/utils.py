@@ -4,8 +4,8 @@ from time import time
 from html import escape
 from os import name, system
 from subprocess import run, PIPE
+from revChatGPT.V2 import Chatbot
 from aiogram import types, exceptions
-from revChatGPT.Official import Chatbot
 from internationalization import get_translation
 
 logger = logging.getLogger("chatgpt_telegram_bot")
@@ -46,8 +46,8 @@ async def send_gpt_message(chatbot: Chatbot, message: types.Message) -> None:
     t1 = time()
     full_message = ""
     starting_message = None
-    for response in chatbot.ask_stream(message.text):
-        full_message += response
+    async for line in chatbot.ask(message.text):
+        full_message += line["choices"][0]["text"].replace("<|im_end|>", "")
         if starting_message is None:
             starting_message = await send_message(full_message, message)
         elif time() - t1 >= 2:

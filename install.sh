@@ -25,11 +25,13 @@ printf "\n"
 
 read < /dev/tty -p "Enter your Telegram ID > " owner_id
 read < /dev/tty -p "Enter your Telegram Bot Token > " telegram_token
-read < /dev/tty -p "Enter your OpenAI Api Key > " openai_key
+read < /dev/tty -p "Enter your OpenAI Email > " openai_email
+read < /dev/tty -p "Enter your OpenAI Password > " openai_pass
 
 echo "OWNER_ID=$owner_id" >> .env
 echo "TELEGRAM_BOT_TOKEN=$telegram_token" >> .env
-echo "OPENAI_API_KEY=$openai_key" >> .env
+echo "EMAIL=$openai_email" >> .env
+echo "PASS=$openai_pass" >> .env
 
 echo "Installation complete."
 echo "Enter the chatgpt_telegram_bot folder and run 'start.sh' to start the bot."
