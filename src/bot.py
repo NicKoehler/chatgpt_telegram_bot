@@ -33,19 +33,13 @@ async def start_handler(message: types.Message):
 
 @dp.message_handler(ALLOWED_CHAT_FILTER, commands="rollback")
 async def rollback_handler(message: types.Message):
-    try:
-        chatbots[message.chat.id].rollback(1)
-        await message.answer(
-            get_translation("rollback_ok", message.from_user.language_code)
-        )
-    except IndexError:
-        await message.answer(
-            get_translation("rollback_fail", message.from_user.language_code)
-        )
+    chatbots[message.chat.id].conversations.rollback("default")
+    await message.answer(get_translation("rollback", message.from_user.language_code))
 
 
 @dp.message_handler(ALLOWED_CHAT_FILTER, commands="reset")
 async def reset_handler(message: types.Message):
+    chatbots[message.chat.id].conversations.remove("default")
     await message.answer(get_translation("reset", message.from_user.language_code))
 
 
