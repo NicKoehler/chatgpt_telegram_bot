@@ -5,7 +5,7 @@ from random import choice
 from os import name, system
 from subprocess import run, PIPE
 from aiogram import types, exceptions
-from revChatGPT.ChatGPT import Chatbot
+from revChatGPT.Unofficial import Chatbot
 from internationalization import get_translation
 
 

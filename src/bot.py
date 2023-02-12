@@ -3,7 +3,7 @@
 import warnings
 from os import getenv
 from dotenv import load_dotenv
-from revChatGPT.ChatGPT import Chatbot
+from revChatGPT.Unofficial import Chatbot
 from aiogram.utils.exceptions import BotBlocked
 from internationalization import get_translation
 from aiogram import Bot, Dispatcher, executor, types
@@ -13,12 +13,15 @@ load_dotenv()
 
 warnings.filterwarnings("ignore")
 
+PASS = getenv("PASS")
+EMAIL = getenv("EMAIL")
 OWNER_ID = int(getenv("OWNER_ID"))
 TELEGRAM_BOT_TOKEN = getenv("TELEGRAM_BOT_TOKEN")
-OPENAI_SESSION_TOKEN = getenv("OPENAI_SESSION_TOKEN")
 OWNER_CHAT_FILTER = lambda message: message.chat.id == OWNER_ID
 
-chatbot = Chatbot(config={"session_token": OPENAI_SESSION_TOKEN})
+config = {"email": EMAIL, "password": PASS}
+
+chatbot = Chatbot(config=config)
 bot = Bot(token=TELEGRAM_BOT_TOKEN, parse_mode=types.ParseMode.MARKDOWN)
 dp = Dispatcher(bot)
 
