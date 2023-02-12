@@ -17,23 +17,25 @@ PASS = getenv("PASS")
 EMAIL = getenv("EMAIL")
 OWNER_ID = int(getenv("OWNER_ID"))
 TELEGRAM_BOT_TOKEN = getenv("TELEGRAM_BOT_TOKEN")
+ALLOWED_IDS = set([OWNER_ID]) + set(map(int, getenv("ALLOWED_IDS").split(",")))
 OWNER_CHAT_FILTER = lambda message: message.chat.id == OWNER_ID
+ALLOWED_CHAT_FILTER = lambda message: message.chat.id in ALLOWED_IDS
 
 
-chatbot = Chatbot(email=EMAIL, password=PASS)
+chatbots = {id: Chatbot(email=EMAIL, password=PASS) for id in ALLOWED_IDS}
 bot = Bot(token=TELEGRAM_BOT_TOKEN, parse_mode=types.ParseMode.MARKDOWN)
 dp = Dispatcher(bot)
 
 
-@dp.message_handler(OWNER_CHAT_FILTER, commands="start")
+@dp.message_handler(ALLOWED_CHAT_FILTER, commands="start")
 async def start_handler(message: types.Message):
     await message.answer(get_translation("start", message.from_user.language_code))
 
 
-@dp.message_handler(OWNER_CHAT_FILTER, commands="rollback")
+@dp.message_handler(ALLOWED_CHAT_FILTER, commands="rollback")
 async def rollback_handler(message: types.Message):
     try:
-        chatbot.rollback(1)
+        chatbots[message.chat.id].rollback(1)
         await message.answer(
             get_translation("rollback_ok", message.from_user.language_code)
         )
@@ -43,7 +45,7 @@ async def rollback_handler(message: types.Message):
         )
 
 
-@dp.message_handler(OWNER_CHAT_FILTER, commands="reset")
+@dp.message_handler(ALLOWED_CHAT_FILTER, commands="reset")
 async def reset_handler(message: types.Message):
     await message.answer(get_translation("reset", message.from_user.language_code))
 
@@ -59,10 +61,10 @@ async def update_handler(message: types.Message):
     await update_and_restart(message)
 
 
-@dp.message_handler(OWNER_CHAT_FILTER)
+@dp.message_handler(ALLOWED_CHAT_FILTER)
 async def text_handler(message: types.Message):
     await message.answer_chat_action("typing")
-    await send_gpt_message(chatbot, message)
+    await send_gpt_message(chatbots[message.chat.id], message)
 
 
 async def ready(_):

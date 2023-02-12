@@ -29,6 +29,7 @@ read < /dev/tty -p "Enter your OpenAI Email > " openai_email
 read < /dev/tty -p "Enter your OpenAI Password > " openai_pass
 
 echo "OWNER_ID=$owner_id" >> .env
+echo "ALLOWED_IDS=$owner_id" >> .env
 echo "TELEGRAM_BOT_TOKEN=$telegram_token" >> .env
 echo "EMAIL=$openai_email" >> .env
 echo "PASS=$openai_pass" >> .env

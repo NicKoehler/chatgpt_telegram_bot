@@ -44,6 +44,7 @@ async def send_gpt_message(chatbot: Chatbot, message: types.Message) -> None:
     """
     send messages in parts updating the answer
     """
+
     t1 = time()
     full_message = ""
     starting_message = None
