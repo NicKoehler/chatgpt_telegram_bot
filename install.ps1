@@ -29,7 +29,6 @@ powershell -Command {
 
     New-Item -ItemType File -Path ".env" -Force | Out-Null
     Add-Content -Path ".env" -Value "OWNER_ID=$owner_id"
-    Add-Content -Path ".env" -Value "ALLOWED_IDS=$owner_id"
     Add-Content -Path ".env" -Value "TELEGRAM_BOT_TOKEN=$telegram_token"
     Add-Content -Path ".env" -Value "EMAIL=$openai_email"
     Add-Content -Path ".env" -Value "PASS=$openai_pass"
