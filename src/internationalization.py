@@ -8,7 +8,8 @@ _strings = {
             "/update · Updates the bot from github\n"
             "/stop · Stop the bot"
         ),
-        "rollback": "Conversation carried back one message",
+        "rollback_ok": "Conversation carried back one message",
+        "rollback_fail": "You are already at the beginning of the conversation",
         "reset": "Conversation has been reset",
         "empty": "Empty message",
         "stop": "Bye 👋",
@@ -24,7 +25,8 @@ _strings = {
             "/update · Aggiorna il bot da github\n"
             "/stop · Ferma il bot"
         ),
-        "rollback": "Conversazione riportata indietro di un messaggio",
+        "rollback_ok": "Conversazione riportata indietro di un messaggio",
+        "rollback_fail": "Sei già all'inizio della conversazione",
         "reset": "Conversazione resettata",
         "empty": "Messaggio vuoto",
         "stop": "Arrivederci 👋",

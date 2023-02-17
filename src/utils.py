@@ -4,7 +4,7 @@ from time import time
 from html import escape
 from os import name, system
 from subprocess import run, PIPE
-from revChatGPT.V2 import Chatbot
+from revChatGPT.V1 import Chatbot
 from aiogram import types, exceptions
 from internationalization import get_translation
 
@@ -36,6 +36,8 @@ async def edit_message(s: str, message: types.Message) -> None:
                 break
             except exceptions.MessageNotModified:
                 break
+        except exceptions.MessageNotModified:
+            break
         except exceptions.RetryAfter as e:
             await asyncio.sleep(e.timeout)
 
@@ -48,10 +50,8 @@ async def send_gpt_message(chatbot: Chatbot, message: types.Message) -> None:
     t1 = time()
     full_message = ""
     starting_message = None
-    async for line in chatbot.ask(message.text):
-        if line["choices"][0]["finish_details"]:
-            break
-        full_message += line["choices"][0]["text"]
+    for line in chatbot.ask(message.text):
+        full_message = line["message"]
         if starting_message is None:
             starting_message = await send_message(full_message, message)
         elif time() - t1 >= 2:

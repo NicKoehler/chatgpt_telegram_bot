@@ -3,7 +3,7 @@
 import warnings
 from os import getenv
 from dotenv import load_dotenv
-from revChatGPT.V2 import Chatbot
+from revChatGPT.V1 import Chatbot
 from aiogram.utils.exceptions import BotBlocked
 from internationalization import get_translation
 from aiogram import Bot, Dispatcher, executor, types
@@ -23,7 +23,7 @@ if allowed_ids := getenv("ALLOWED_IDS"):
 OWNER_CHAT_FILTER = lambda message: message.chat.id == OWNER_ID
 ALLOWED_CHAT_FILTER = lambda message: message.chat.id in ALLOWED_IDS
 
-chatbots = {id: Chatbot(email=EMAIL, password=PASS) for id in ALLOWED_IDS}
+chatbots = {id: Chatbot(config={"email": EMAIL, "password": PASS}) for id in ALLOWED_IDS}
 bot = Bot(token=TELEGRAM_BOT_TOKEN, parse_mode=types.ParseMode.MARKDOWN)
 dp = Dispatcher(bot)
 
@@ -35,13 +35,17 @@ async def start_handler(message: types.Message):
 
 @dp.message_handler(ALLOWED_CHAT_FILTER, commands="rollback")
 async def rollback_handler(message: types.Message):
-    chatbots[message.chat.id].conversations.rollback("default")
-    await message.answer(get_translation("rollback", message.from_user.language_code))
-
+    try:
+        chatbots[message.chat.id].rollback_conversation()
+        await message.answer(get_translation("rollback_ok", message.from_user.language_code))
+    except IndexError:
+        await message.answer(
+            get_translation("rollback_fail", message.from_user.language_code)
+        )
 
 @dp.message_handler(ALLOWED_CHAT_FILTER, commands="reset")
 async def reset_handler(message: types.Message):
-    chatbots[message.chat.id].conversations.remove("default")
+    chatbots[message.chat.id].reset_chat()
     await message.answer(get_translation("reset", message.from_user.language_code))
 
 
